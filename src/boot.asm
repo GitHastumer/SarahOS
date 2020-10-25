@@ -48,6 +48,11 @@ enableHardwareInterrupts:
     sti
     ret
 
+global executeSyscall
+executeSyscall:
+    int 0x30
+    ret
+
 global _start:function (_start.end - _start)
 _start:
     mov esp, stack_top

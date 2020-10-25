@@ -44,7 +44,13 @@ const char *exceptionNames[] = {
 
 #define IRQ(n) IRQ_BEGIN + n
 
-extern "C" void handle_int(struct inthandler::cpu_state *cpu) {
+#define SYSCALL_BEGIN IRQ(15) + 1
+
+#define SYSCALL(n) SYSCALL_BEGIN + n
+
+extern "C" inthandler::cpu_state *handle_int(inthandler::cpu_state *cpu) {
+    inthandler::cpu_state *newState = cpu;
+
     if (cpu->intr <= 0x1f) {
         term::printf("%s exception %d, kernel halted. Dumping processor information: \n", exceptionNames[cpu->intr], cpu->intr);
 
@@ -57,14 +63,14 @@ extern "C" void handle_int(struct inthandler::cpu_state *cpu) {
             asm volatile("cli; hlt");
         }
     } else {
-        // term::puts("int ");
-        // term::putun(cpu->intr);
-        // term::puts(".\n");
-
-        if (cpu->intr == IRQ(1)) {
+        if (cpu->intr == IRQ(0)) {
+            
+        } else if (cpu->intr == IRQ(1)) {
             kb::handleIRQ();
-        } else if (cpu->intr != IRQ(0)) {
+        } else if (cpu->intr < SYSCALL_BEGIN) {
             term::printf("Received interrupt %d.\n", cpu->intr);
+        } else if (cpu->intr == SYSCALL(0)) {
+            term::printf("SYSCALL 0\n");
         }
         
         if (cpu->intr >= 0x20 && cpu->intr <= 0x2f) { // Send EOI to PIC
@@ -73,4 +79,6 @@ extern "C" void handle_int(struct inthandler::cpu_state *cpu) {
 
         util::outb(0x20, 0x20);
     }
+
+    return newState;
 }

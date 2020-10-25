@@ -15,6 +15,4 @@ void pic::init() {
 
     util::outb(0x21, 0x0);
     util::outb(0xa1, 0x0);
-
-    enableHardwareInterrupts();
 }

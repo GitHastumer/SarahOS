@@ -316,7 +316,6 @@ char kb::getch_noblock() {
 void kb::init() {
     util::outb(0x64, 0xaa);
     int ret = util::inb(0x60);
-
     if (ret != 0x55) {
         term::printf("The keyboard returned %d instead of 85. What happened there?\n");
         return;

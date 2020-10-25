@@ -46,5 +46,8 @@ iso: kernel
 
 	grub-mkrescue -o $(BUILD_DIR)/sarahos.iso $(BUILD_DIR)/iso
 
+run: iso
+	qemu-system-i386.exe -cdrom $(BUILD_DIR)/sarahos.iso
+
 clean:
 	rm -r $(BUILD_DIR)/*

@@ -25,6 +25,6 @@ namespace inthandler {
     };
 }
 
-extern "C" void handle_int(struct inthandler::cpu_state *cpu);
+extern "C" inthandler::cpu_state *handle_int(struct inthandler::cpu_state *cpu);
 
 #endif // INTHANDLER_H
