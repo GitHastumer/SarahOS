@@ -23,6 +23,8 @@ namespace inthandler {
         uint32_t   esp;
         uint32_t   ss;
     };
+
+    static uint32_t tss[32] = {0, 0, 0x10};
 }
 
 extern "C" inthandler::cpu_state *handle_int(struct inthandler::cpu_state *cpu);

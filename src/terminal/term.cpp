@@ -3,7 +3,7 @@
 size_t row;
 size_t col;
 uint8_t color;
-uint16_t *buffer;
+volatile uint16_t *buffer;
 
 const char numberChars[] = "0123456789abcdef";
 const char capitalChars[] = "0123456789ABCDEF";
@@ -70,6 +70,7 @@ void term::setCursor(int x, int y) {
 void term::putc(char c) {
     if (c == '\0')
         return;
+
     else if (c == '\b') {
         if (col > 0) {
             col--;
@@ -90,6 +91,13 @@ void term::putc(char c) {
     }
 
     setCursor(col, row);
+}
+
+void term::putc(char c, int x, int y) {
+    if (c == '\0')
+        return;
+    
+    buffer[row * VGA_WIDTH + col] = entry(c, color);
 }
 
 void term::puts(const char *str) {

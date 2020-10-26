@@ -4,6 +4,7 @@
 #include "../pic/pic.h"
 #include "../keyboard/keyboard.h"
 #include "../util.h"
+#include "../multitasking/multitasking.h"
 
 const char *exceptionNames[] = {
     "Divide by zero",
@@ -49,7 +50,7 @@ const char *exceptionNames[] = {
 #define SYSCALL(n) SYSCALL_BEGIN + n
 
 extern "C" inthandler::cpu_state *handle_int(inthandler::cpu_state *cpu) {
-    inthandler::cpu_state *newState = cpu;
+    inthandler::cpu_state *newCpu = cpu;
 
     if (cpu->intr <= 0x1f) {
         term::printf("%s exception %d, kernel halted. Dumping processor information: \n", exceptionNames[cpu->intr], cpu->intr);
@@ -64,7 +65,10 @@ extern "C" inthandler::cpu_state *handle_int(inthandler::cpu_state *cpu) {
         }
     } else {
         if (cpu->intr == IRQ(0)) {
-            
+            newCpu = multitasking::schedule(cpu);
+            term::puts("irq0 ");
+            inthandler::tss[1] = (uint32_t) (newCpu + 1);
+            term::puts("set tss ");
         } else if (cpu->intr == IRQ(1)) {
             kb::handleIRQ();
         } else if (cpu->intr < SYSCALL_BEGIN) {
@@ -80,5 +84,5 @@ extern "C" inthandler::cpu_state *handle_int(inthandler::cpu_state *cpu) {
         util::outb(0x20, 0x20);
     }
 
-    return newState;
+    return newCpu;
 }

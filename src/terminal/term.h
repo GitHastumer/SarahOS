@@ -38,6 +38,7 @@ namespace term {
     void setCursor(int x, int y);
 
     void putc(char c);
+    void putc(char c, int x, int y);
     void puts(const char *str);
 
     void putn(int64_t n);

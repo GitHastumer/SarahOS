@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 namespace gdt {
-    constexpr int ENTRIES = 5;
+    constexpr int ENTRIES = 6;
 
     void init();
 

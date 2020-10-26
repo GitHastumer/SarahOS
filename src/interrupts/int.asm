@@ -105,9 +105,17 @@ int_common_handler:
     push ebx
     push eax
 
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+
     push esp
     call handle_int
-    add esp, 4
+    mov esp, eax
+
+    mov ax, 0x23
+    mov ds, ax
+    mov es, ax
 
     pop eax
     pop ebx
