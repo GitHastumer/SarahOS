@@ -1,6 +1,7 @@
 #if !defined(UTIL_H)
 #define UTIL_H
 
+#include <stdint.h>
 #include <stddef.h>
 
 namespace util {
@@ -13,6 +14,8 @@ namespace util {
         asm volatile("inb %1, %0" : "=a" (data) : "Nd" (port));
         return data;
     }
+
+    size_t strlen(const char *str);
 }
 
 #endif // UTIL_H

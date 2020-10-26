@@ -3,7 +3,7 @@ BUILD_DIR = ../build
 QEMU_DEBUG_FLAGS = -d int
 
 CPP = i686-elf-g++
-CPP_FLAGS = -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
+CPP_FLAGS = -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -nostdlib
 
 ASM = nasm
 ASM_FLAGS = -felf32
@@ -40,7 +40,7 @@ kernel: $(CPP_OBJS) $(ASM_OBJS)
 		echo "Multiboot check failed!"; \
 	fi
 
-iso: $(BUILD_DIR)/sarahos.bin
+iso: kernel
 	mkdir -p $(BUILD_DIR)/iso/boot/grub
 
 	cp $(BUILD_DIR)/sarahos.bin $(BUILD_DIR)/iso/boot/sarahos.bin
@@ -48,10 +48,10 @@ iso: $(BUILD_DIR)/sarahos.bin
 
 	grub-mkrescue -o $(BUILD_DIR)/sarahos.iso $(BUILD_DIR)/iso
 
-run: $(BUILD_DIR)/sarahos.iso
+run: iso
 	qemu-system-i386.exe -cdrom $(BUILD_DIR)/sarahos.iso
 
-debug: $(BUILD_DIR)/sarahos.iso
+debug: iso
 	qemu-system-i386.exe $(QEMU_DEBUG_FLAGS) -cdrom $(BUILD_DIR)/sarahos.iso
 
 clean:
