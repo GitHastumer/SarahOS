@@ -48,6 +48,12 @@ enableHardwareInterrupts:
     sti
     ret
 
+global reloadTaskRegister
+reloadTaskRegister:
+    pop ax
+    ltr ax
+    ret
+
 global executeSyscall
 executeSyscall:
     int 0x30

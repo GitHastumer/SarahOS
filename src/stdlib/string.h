@@ -5,7 +5,7 @@
 
 namespace std {
     size_t strlen(char *str);
-    int strcmp(char *str1, char *str2);
+    int strcmp(const char *str1, const char *str2);
 }
 
 #endif // STRING_H

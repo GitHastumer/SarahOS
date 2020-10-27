@@ -1,6 +1,7 @@
 #include "idt.h"
 
 #include "../terminal/term.h"
+#include "../serial/serial.h"
 
 static uint64_t _idt[idt::ENTRIES];
 
@@ -13,6 +14,8 @@ void idt::setEntry(int id, uint64_t offset, uint16_t selector, uint8_t type_attr
     _idt[id] |= (selector & 0xffffll) << 16;
     _idt[id] |= (type_attr & 0xffll) << 40;
     _idt[id] |= ((offset >> 16) & 0xffffll) << 48;
+
+    serial::printf("IDT Entry %d: Offset %x, selector %x, Attributes %x\n", id, offset, selector, type_attr);
 }
 
 void idt::init() {
@@ -92,4 +95,6 @@ void idt::init() {
     };
 
     setIDT(&idtp);
+
+    serial::printf("Set the IDT.\n");
 }

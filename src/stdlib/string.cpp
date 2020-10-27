@@ -9,7 +9,7 @@ size_t std::strlen(char *str) {
     return size;
 }
 
-int std::strcmp(char *str1, char *str2) {
+int std::strcmp(const char *str1, const char *str2) {
     int diff = 0;
 
     while (1) {

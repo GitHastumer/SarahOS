@@ -1,6 +1,7 @@
 #include "pic.h"
 
 #include "../util.h"
+#include "../serial/serial.h"
 
 void pic::init() {
     util::outb(0x20, 0x11);
@@ -15,4 +16,6 @@ void pic::init() {
 
     util::outb(0x21, 0x0);
     util::outb(0xa1, 0x0);
+
+    serial::printf("Initialized PIC.\n");
 }

@@ -2,6 +2,7 @@
 
 #include "../terminal/term.h"
 #include "../interrupts/inthandler.h"
+#include "../serial/serial.h"
 
 #define GDT_FLAG_DATASEG 0x02
 #define GDT_FLAG_CODESEG 0x0a
@@ -24,6 +25,8 @@ void gdt::setEntry(int i, uint32_t base, uint32_t limit, int32_t flags) {
     _gdt[i] |= ((limit >> 16) & 0xfll) << 48;
     _gdt[i] |= ((flags >> 8) & 0xffll) << 52;
     _gdt[i] |= ((base >> 24) & 0xffll) << 56;
+
+    serial::printf("GDT Entry %d: Base %x, limit %x, flags: %x\n", i, base, limit, flags);
 }
 
 void gdt::init() {
@@ -41,8 +44,7 @@ void gdt::init() {
     setEntry(4, 0, 0xfffff,
         GDT_FLAG_SEGMENT | GDT_FLAG_32_BIT | GDT_FLAG_DATASEG | GDT_FLAG_4K_GRAN | GDT_FLAG_PRESENT | GDT_FLAG_RING3);
 
-    setEntry(5, (uint32_t) inthandler::tss, sizeof(inthandler::tss),
-        GDT_FLAG_TSS | GDT_FLAG_PRESENT | GDT_FLAG_RING3);
+    setEntry(5, (uint32_t) tss, sizeof(tss), GDT_FLAG_TSS | GDT_FLAG_PRESENT | GDT_FLAG_RING3);
 
     struct gdt_ptr_struct {
         uint16_t limit;
@@ -57,5 +59,9 @@ void gdt::init() {
     setGDT(&gdtp);
     reloadSegments();
 
+    serial::printf("Set GDT and reloaded segments.\n");
+
     asm volatile("ltr %%ax" :: "a" (5 << 3));
+
+    serial::printf("Reloaded task register.\n");
 }

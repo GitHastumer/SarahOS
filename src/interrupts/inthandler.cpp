@@ -1,10 +1,12 @@
 #include "inthandler.h"
 
+#include "../gdt/gdt.h"
 #include "../terminal/term.h"
 #include "../pic/pic.h"
 #include "../keyboard/keyboard.h"
 #include "../util.h"
 #include "../multitasking/multitasking.h"
+#include "../serial/serial.h"
 
 const char *exceptionNames[] = {
     "Divide by zero",
@@ -60,15 +62,22 @@ extern "C" inthandler::cpu_state *handle_int(inthandler::cpu_state *cpu) {
         term::printf("cs=%x ss=%x esp=%x eflags=%x\n", cpu->cs, cpu->ss, cpu->esp, cpu->eflags);
         term::printf("intr=%d error=%d\n", cpu->intr, cpu->error);
 
+        serial::printf("%s exception %d, kernel halted. Dumping processor information: \n", exceptionNames[cpu->intr], cpu->intr);
+
+        serial::printf("eax=%d ebx=%d ecx=%d edx=%d\n", cpu->eax, cpu->ebx, cpu->ecx, cpu->edx);
+        serial::printf("esi=%x edi=%x ebp=%x eip=%x\n", cpu->esi, cpu->edi, cpu->ebp, cpu->eip);
+        serial::printf("cs=%x ss=%x esp=%x eflags=%x\n", cpu->cs, cpu->ss, cpu->esp, cpu->eflags);
+        serial::printf("intr=%d error=%d\n", cpu->intr, cpu->error);
+
         while (1) {
             asm volatile("cli; hlt");
         }
     } else {
+        serial::printf("Received interrupt %x.\n", cpu->intr);
+        
         if (cpu->intr == IRQ(0)) {
             newCpu = multitasking::schedule(cpu);
-            term::puts("irq0 ");
-            inthandler::tss[1] = (uint32_t) (newCpu + 1);
-            term::puts("set tss ");
+            tss[1] = (uint32_t) (newCpu + 1);
         } else if (cpu->intr == IRQ(1)) {
             kb::handleIRQ();
         } else if (cpu->intr < SYSCALL_BEGIN) {

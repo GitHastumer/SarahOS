@@ -2,6 +2,7 @@
 
 #include "../terminal/term.h"
 #include "../util.h"
+#include "../serial/serial.h"
 
 char scancodeToAscii[] = {
     0,
@@ -315,9 +316,11 @@ char kb::getch_noblock() {
 
 void kb::init() {
     util::outb(0x64, 0xaa);
+
     int ret = util::inb(0x60);
     if (ret != 0x55) {
         term::printf("The keyboard returned %d instead of 85. What happened there?\n");
+        serial::printf("The keyboard returned %d instead of 85. What happened there?\n");
         return;
     }
 
